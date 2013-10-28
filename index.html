@@ -1,0 +1,156 @@
+<!doctype html>
+<html>
+  <body>
+<script src="http://localhost:1337/socket.io/socket.io.js"></script>
+    <script src="built.js"></script>
+    <script type="text/javascript">
+  var socket = io.connect('http://localhost:1337');
+  socket.on('page:reload', function () {
+	 location.reload();
+  });
+
+
+  socket.on('build:cube',function(material){
+    material = parseInt(material)
+    var random = false
+    if(material===9) {
+      random = true
+    }
+    buildCube(material,random)
+  });
+
+  socket.on('build:decayCube',function(material,interval,state){
+    if(state){
+      material = parseInt(material)
+      var random = false
+      if(material===9) {
+        random = true
+      }
+      decayCube.start(cubes[0],random)
+    } else {
+      decayCube.stop()
+    }
+  });
+
+
+  socket.on('build:undecayCube',function(material,interval,state){
+    if(state){
+      material = parseInt(material)
+      var random = false
+      if(material===9) {
+        random = true
+      }
+      unDecayCube.start(cubes[0],material,interval,random)
+    } else {
+      unDecayCube.stop()
+    }
+  });
+
+
+  socket.on('camera:rotZ', function (rot) {
+   setCameraRotationZ(rot);
+  });
+  socket.on('camera:rotX', function (rot) {
+   setCameraRotationX(rot);
+  });
+  socket.on('camera:rotY', function (rot) {
+   setCameraRotationY(rot);
+  });
+  socket.on('camera:switchRotY', function () {
+   switchCameraRotationY.switch(function(direction){
+    socket.emit('camera:rotYDir',direction)
+   });
+  });
+   socket.on('camera:switchRotZ', function () {
+   switchCameraRotationZ.switch(function(direction){
+    socket.emit('camera:rotZDir',direction)
+   });
+  });
+  socket.on('camera:switchRotX', function () {
+   switchCameraRotationX.switch(function(direction){
+    socket.emit('camera:rotXDir',direction)
+   });
+  });
+
+  socket.on('move:switchX', function () {
+   moveX.switch(function(dir){
+    socket.emit('dir:x',dir)
+   });
+  });
+
+  socket.on('move:translateX', function (direction) {
+   moveX.translate(direction);
+  });
+
+
+  socket.on('move:switchY', function () {
+   moveY.switch(function(dir){
+    socket.emit('dir:y',dir)
+   });
+  });
+
+  socket.on('move:translateY', function (direction) {
+   moveY.translate(direction)
+  });
+
+
+
+  socket.on('move:switchZ', function () {
+   moveZ.switch(function(dir){
+    socket.emit('dir:z',dir)
+   });
+  });
+
+  socket.on('move:translateZ', function (direction) {
+   moveZ.translate(direction);
+  });
+
+
+  socket.on('game:rotVel',function(vel){
+    if(!vel){vel=1}
+    rotVel = vel*0.0025
+    socket.emit('rotVel',rotVel)
+  })
+
+  socket.on('game:mvVel',function(vel){
+    if(!vel){vel=1}
+    mvVel = vel
+    socket.emit('mvVel',mvVel)
+  })
+
+  socket.on('game:translateVel',function(vel){
+    if(!vel){vel=1}
+    translateVel = vel
+    socket.emit('translateVel',translateVel)
+  })  
+
+
+
+  function sendCamRotY(y) {
+    socket.emit('camera:cameraGameRotY',y)
+  }
+
+  function sendCamRotX(x) {
+    socket.emit('camera:cameraGameRotX',x)
+  }
+  function sendCamRotZ(z) {
+    socket.emit('camera:cameraGameRotZ',z)
+  }
+
+
+  function sendPosX(x) {
+    socket.emit('pos:x',x)
+  }
+
+  function sendPosY(y) {
+    socket.emit('pos:y',y)
+  }
+
+  function sendPosZ(z) {
+    socket.emit('pos:z',z)
+  }
+
+</script>
+    </script>
+  </body>
+</html>

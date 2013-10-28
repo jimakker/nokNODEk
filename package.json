@@ -1,0 +1,24 @@
+{
+  "name": "noknodek",
+  "version": "0.0.1",
+  "dependencies": {
+    "voxel-hello-world": "0.6.0",
+    "socket.io": "~0.9.16",
+    "midi": "~0.7.0"
+  },
+  "scripts": {
+    "start": "n use 0.10.8 server.js"
+  },
+  "readmeFilename": "README.md",
+  "description": "3D Live visualization proof of concept using Voxeljs, websockets and a Midi controller",
+  "main": "server.js",
+  "devDependencies": {},
+  "repository": "",
+  "keywords": [
+    "voxeljs",
+    "visual",
+    "midi"
+  ],
+  "author": "jimakker",
+  "license": "BSD"
+}

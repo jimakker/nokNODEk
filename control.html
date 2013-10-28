@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>nokNODEk CTRL ROOM</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="/bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+
+
+  </head>
+  <body>
+    <div class='container'>
+      <h1>nokNODEk CTRL ROOM</h1>
+      <hr>
+      <select id='cube-material'>
+        <option value="0">Void</option>
+        <option value="1">Black</option>
+        <option value="2">Red</option>
+        <option value="3">White</option>
+        <option value="4">Yellow</option>
+        <option value="5">Green</option>
+        <option value="6">Purple</option>
+        <option value="7">Blue</option>
+        <option value="8">Orange</option>
+        <option value="9">Random</option>
+      </select> 
+      <input type='number' id='decay-interval' placeholder='decay interval in ms'>
+      <button onclick='buildCube()'>BUILD CUBE</button>
+      <button onclick='decayCube(true)'>START DECAY</button>
+      <button onclick='decayCube(false)'>STOP DECAY</button>
+      <button onclick='undecayCube(true)'>START UNDECAY</button> 
+      <button onclick='undecayCube(false)'>STOP UNDECAY</button> 
+      <hr>
+      <div class='row'>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>RotVel</h3>
+          <ul>
+            <li>Rotation Vel: <span id='rotation-vel'>0</id></li>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>MvVel</h3>
+          <ul>
+            <li>Move Vel: <span id='move-vel'>0</id></li>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>TransVel</h3>
+          <ul>
+            <li>Translation Vel: <span id='translation-vel'>0</id></li>
+        </div>  
+      </div>              
+
+      <hr>
+      <div class='row'>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>CAM X</h3>
+          <ul>
+            <li>Rotating: <span id='cam-x-rotating'>0</id></li>
+            <li>Knob: <span id='cam-x-rotation-knob'>0</id></li>
+            <li>Game: <span id='cam-x-rotation-game'>0</id></li>
+          </ul>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>CAM Y</h3>
+          <li>Rotating: <span id='cam-y-rotating'>0</id></li>
+          <li>Knob: <span id='cam-y-rotation-knob'>0</id></li>
+          <li>Game: <span id='cam-y-rotation-game'>0</id></li>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>CAM Z</h3>
+          <li>Rotating: <span id='cam-z-rotating'>0</id></li>
+          <li>Knob: <span id='cam-z-rotation-knob'>0</id></li>
+          <li>Game: <span id='cam-z-rotation-game'>0</id></li>
+        </div>                
+      </div>
+
+      <div class='row'>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>POS X</h3>
+          <ul>
+            <li>Moving: <span id='pos-x-dir'>0</id></li>
+            <li>Pos: <span id='pos-x-position'>0</id></li>
+            <!-- <li>Game: <span id='cam-x-rotation-game'>0</id></li> -->
+          </ul>
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>POS Y</h3>
+          <li>Moving: <span id='pos-y-dir'>0</id></li>
+          <li>Pos: <span id='pos-y-position'>0</id></li>
+          <!-- <li>Game: <span id='cam-y-rotation-game'>0</id></li> -->
+        </div>
+        <div class='col-lg-4 col-md-4 col-sm-4'>
+          <h3>POS Z</h3>
+          <li>Moving: <span id='pos-z-dir'>0</id></li>
+          <li>Pos: <span id='pos-z-position'>0</id></li>
+          <!-- <li>Game: <span id='cam-z-rotation-game'>0</id></li> -->
+        </div>                
+      </div>      
+
+
+      <hr>
+
+
+
+      <button onclick="reload()"/>RELOAD PAGE</button>
+
+
+
+    </div>
+
+
+
+
+
+
+
+
+
+    <script src="jquery.js"></script>
+    <!-- CHANGE URL!! -->
+    <script src="http://localhost:1337/socket.io/socket.io.js"></script>
+  <script>
+
+  var $camXRot = $('#cam-x-rotating')
+  , $camYRot = $('#cam-y-rotating')
+  , $camZRot = $('#cam-z-rotating')
+  , $camXKnob = $('#cam-x-rotation-knob')
+  , $camYKnob = $('#cam-y-rotation-knob')
+  , $camZKnob = $('#cam-z-rotation-knob')
+  , $camXRotGame = $('#cam-x-rotation-game')
+  , $camYRotGame = $('#cam-y-rotation-game')
+  , $camZRotGame = $('#cam-z-rotation-game')
+  , $posX = $('#pos-x-position')
+  , $posY = $('#pos-y-position')
+  , $posZ = $('#pos-z-position')
+  , $posXdir = $('#pos-x-dir')
+  , $posYdir = $('#pos-y-dir')
+  , $posZdir = $('#pos-z-dir')
+  , $rotVel = $('#rotation-vel')
+  , $mvVel = $('#move-vel')
+  , $translateVel = $('#translation-vel')
+
+  // CHANGE URL!!! 
+    var socket = io.connect('http://localhost:1337');
+
+    socket.on('news', function (data) {
+      console.log(data);
+      socket.emit('my other event', { my: 'data' });
+    });
+
+
+    function reload() {
+      socket.emit('page:reload')
+    }
+
+    function buildCube(){
+      socket.emit('build:cube',$('#cube-material').val())
+    }
+
+    function decayCube(state) {
+      socket.emit('build:decayCube',$('#cube-material').val(),$('#decay-interval').val(),state)
+    }
+
+    function undecayCube(state) {
+      socket.emit('build:undecayCube',$('#cube-material').val(),$('#decay-interval').val(),state)
+    }
+
+    socket.on('camera:rotXDir',function(direction){
+      $camXRot.text(direction)
+    })
+
+    socket.on('camera:rotYDir',function(direction){
+      $camYRot.text(direction)
+    })
+
+    socket.on('camera:rotZDir',function(direction){
+      $camZRot.text(direction)
+    })
+
+    socket.on('camera:rotX',function(direction){
+      $camXKnob.text(direction)
+    })
+
+    socket.on('camera:rotY',function(direction){
+      $camYKnob.text(direction)
+    })
+
+    socket.on('camera:rotZ',function(direction){
+      $camZKnob.text(direction)
+    })
+
+    socket.on('camera:cameraGameRotX',function(x){
+        x = x / 6.2835
+        x = Math.round(x * 100)/100
+      $camXRotGame.text(x)
+    })
+
+    socket.on('camera:cameraGameRotY',function(y){
+      y = y / 6.2835
+      y = Math.round(y * 100)/100
+      $camYRotGame.text(y)
+    })
+
+    socket.on('camera:cameraGameRotZ',function(z){
+      z = z / 6.2835
+     z =  Math.round(z * 100)/100
+      $camZRotGame.text(z)
+    })
+
+    socket.on('pos:x',function(x){
+      $posX.text(x)
+    })
+    socket.on('pos:y',function(y){
+      $posY.text(y)
+    })
+    socket.on('pos:z',function(z){
+      $posZ.text(z)
+    })        
+
+    socket.on('dir:x',function(x){
+      $posXdir.text(x)
+    })
+    socket.on('dir:y',function(y){
+      $posYdir.text(y)
+    })
+    socket.on('dir:z',function(z){
+      $posZdir.text(z)
+    }) 
+
+    socket.on('rotVel',function(vel){
+      $rotVel.text(vel)
+    }) 
+    socket.on('mvVel',function(vel){
+      $mvVel.text(vel)
+    }) 
+    socket.on('translateVel',function(vel){
+      $translateVel.text(vel)
+    }) 
+
+  </script>    
+  </body>
+</html>
+
+
+
+
+

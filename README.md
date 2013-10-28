@@ -1,7 +1,7 @@
 nokNODEk
 ===
 
-3D Live visualization proof of concept using [Voxeljs](http://voxeljs.com), websockets and a Midi controller.
+3D Live visualization proof of concept using [voxel.js](http://voxeljs.com), nodejs, websockets and a Midi controller.
 
 ![nokNODEk](http://i.imgur.com/EXLJB9Ph.png)
 
